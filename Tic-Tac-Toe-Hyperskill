@@ -1,0 +1,130 @@
+package tictactoe;
+
+import java.util.*;
+
+public class Main {
+    static Scanner s = new Scanner(System.in);
+    static boolean winX = false;
+    static boolean winO = false;
+    static boolean gameIsFinish = false;
+    static char[][] matrix = new char[3][3];
+    static int countX;
+    static int countO;
+    static char lastChar = 'O';
+
+    public static void main(String[] args) {
+        char[][] matrix = new char[3][3];
+        matrixFill();
+        boolean draw = false;
+        printTable();
+        while (!gameIsFinish) {
+            enterCoordinates();
+            checkWin();
+            checkImp(winX, winO);
+            draw = checkDraw(winX, winO);
+        }
+        boolean impossible = false;
+
+        if (impossible) {
+            System.out.println("Impossible");
+        } else if (winX) {
+            System.out.println("X wins");
+        } else if (winO) {
+            System.out.println("O wins");
+        } else if (!draw) {
+            System.out.println("Game not finished");
+        } else {
+            System.out.println("Draw");
+        }
+
+    }
+
+    public static void matrixFill() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                matrix[i][j] = ' ';
+            }
+        }
+    }
+
+    public static void enterCoordinates() {
+        boolean correctInput = false;
+        while (!correctInput) {
+            System.out.print("Enter the coordinates: ");
+            String coords = s.nextLine().replace(" ", "");
+            if (coords.matches("\\d+")) {
+                int i = Integer.parseInt(String.valueOf(coords.charAt(0)));
+                int j = Integer.parseInt(String.valueOf(coords.charAt(1)));
+                if (i > 3 || i < 1 || j > 3 || j < 1) {
+                    System.out.println("Coordinates should be from 1 to 3!");
+                } else if (matrix[i - 1][j - 1] == 'X' || matrix[i - 1][j - 1] == 'O') {
+                    System.out.println("This cell is occupied! Choose another one!");
+                } else {
+                    matrix[i - 1][j - 1] = lastChar == 'X' ? 'O' : 'X';
+                    lastChar = matrix[i - 1][j - 1];
+                    countO++;
+                    correctInput = true;
+                }
+            } else {
+                System.out.println("You should enter numbers!");
+            }
+        }
+        printTable();
+    }
+
+    public static void printTable() {
+        System.out.println("---------");
+        for (int i = 0; i < 3; i++) {
+            System.out.print("| ");
+            for (int j = 0; j < 3; j++) {
+                System.out.print(matrix[i][j] + " ");
+            }
+            System.out.println("|");
+        }
+        System.out.println("---------");
+    }
+
+    public static boolean checkDraw(boolean x, boolean o) {
+        if (countO == 9 && !x && !o) {
+            gameIsFinish = true;
+        }
+        return  true;
+    }
+
+    public static void checkWin() {
+        char[] checkLine = new char[3];
+        char[] checkCol = new char[3];
+        char[] left = new char[3];
+        char[] right = new char[3];
+        char[] checkX = {'X', 'X', 'X'};
+        char[] checkO = {'O', 'O', 'O'};
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                checkLine[j] = matrix[i][j];
+                checkCol[j] = matrix[j][i];
+                left[j] = matrix[j][j];
+                right[j] = matrix[2 - j][j];
+            }
+            if (Arrays.equals(checkX, checkLine)
+                    || Arrays.equals(checkX, checkCol) || Arrays.equals(checkX, left)
+                    || Arrays.equals(checkX, right)) {
+                winX = true;
+                gameIsFinish = true;
+            } else if (Arrays.equals(checkO, checkLine)
+                    || Arrays.equals(checkO, checkCol) || Arrays.equals(checkO, left)
+                    || Arrays.equals(checkO, right)) {
+                winO = true;
+                gameIsFinish = true;
+            }
+        }
+    }
+
+    public static boolean checkImp(boolean x, boolean o) {
+        int result = Math.abs(countX - countO);
+        if (result > 1 || x && o) {
+            return true;
+        }   else {
+            return false;
+        }
+    }
+}
